@@ -37,6 +37,7 @@ public class Receiver {
                 }
                 Thread.sleep(10000);
                 message.acknowledge();
+                System.out.println("Message supprimé de la queue ");
             }
 
             receiver.close();
