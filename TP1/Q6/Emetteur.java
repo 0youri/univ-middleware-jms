@@ -9,7 +9,7 @@ public class Emetteur {
             return;
         }
         String messageText = args[0];
-        String destinataire = args.length > 1 ? args[1] : null;
+        String destinataire = args[1] != null ? args[1] : "user";
 
         InitialContext messaging = new InitialContext();
         QueueConnectionFactory connectionFactory = (QueueConnectionFactory) messaging.lookup("jms/CFTP1");
@@ -19,33 +19,28 @@ public class Emetteur {
         QueueSender sender = session.createSender(queue);
 
         
-        Queue temporaryQueue = session.createTemporaryQueue();
-        QueueSender replySender = session.createSender(null);
+        Queue tempQueue = session.createTemporaryQueue(); 
+        MessageConsumer responseConsumer = session.createConsumer(tempQueue); 
 
         connection.start();
 
-        for (int i = 0; i < 3; i++) {
-            TextMessage message = session.createTextMessage();
-            message.setText(i + " : " + messageText);
-            if (destinataire != null) {
-                message.setStringProperty("destinataire", destinataire);
-            }
-            message.setJMSReplyTo(temporaryQueue);
-            String correlationID = i + "-message";
-
-            message.setJMSCorrelationID(correlationID);
-           
-            sender.send(message);
-            TextMessage replyMsg = (TextMessage) session.receive();
-            if (replyMsg != null) {
-                System.out.println("Réponse reçue : " + replyMsg.getText());
-            }
-            replySender.close();
-            
+        TextMessage message = session.createTextMessage();
+        message.setText(messageText);
+        if (destinataire != null) {
+            message.setStringProperty("destinataire", destinataire);
         }
 
-
+        // Q6
+        message.setJMSReplyTo(tempQueue);
+        message.setJMSCorrelationID("#idJMS-" + destinataire);
+        sender.send(message);
+        System.out.println("Message envoyé : " + message.getText());
         
+        Message response = responseConsumer.receive();
+        if (response != null) {
+            System.out.println("Réponse reçue : " + ((TextMessage) response).getText());
+        }
+
         connection.close();
     }
 }

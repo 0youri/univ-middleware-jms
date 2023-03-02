@@ -38,7 +38,7 @@ public class Receiver {
                 if ( replyTo != null ){
                     String correlationId = message.getJMSCorrelationID();
                     QueueSender replySender = session.createSender((Queue) replyTo);
-                    TextMessage replyMessage = session.createTextMessage("Message bien reçu !");
+                    TextMessage replyMessage = session.createTextMessage("Message '" + message.getText() + "' bien reçu !");
                     replyMessage.setJMSCorrelationID(correlationId);
                     replySender.send(replyMessage);
                     replySender.close();
