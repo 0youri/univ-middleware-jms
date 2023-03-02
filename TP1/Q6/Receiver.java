@@ -43,7 +43,7 @@ public class Receiver {
                     replySender.send(replyMessage);
                     replySender.close();
                 }
-
+                Thread.sleep(10000);
                 message.acknowledge();
             }
 
