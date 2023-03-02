@@ -4,10 +4,7 @@ import javax.naming.*;
 public class Receiver {
 
     public static void main(String[] args) throws NamingException, JMSException, InterruptedException {
-        if (args.length != 2) {
-            System.out.println("Usage: Receiver <waitTime> <receiverName>");
-            return;
-        }
+    
         String[] destinataires = args.length > 0 ? args : new String[] { null };
 
         InitialContext messaging = new InitialContext();
